@@ -1,3 +1,4 @@
+from turtle import width
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 import torch
 from shapely.geometry import Polygon
 from operator import itemgetter
+import open3d.visualization as o3d
 
 # add project directory to python path to enable relative imports
 import os
@@ -68,4 +70,9 @@ def show_range_image(frame, lidar_name):
     img_range_intensity = img_range_intensity[:, ri_center_range - deg90_range:ri_center_range + deg90_range]
 
     return img_range_intensity
+    
+def show_pcl(pcl, vis=True):
+    # setting the view window and callback key
+    vis_window = o3d.VisualizerWithKeyCallback()
+    vis_window.create_window(width=1280, height=980)
     
