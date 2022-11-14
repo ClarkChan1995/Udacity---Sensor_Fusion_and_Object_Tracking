@@ -138,9 +138,11 @@ def bev_from_pcl(lidar_pcl, configs):
     # display the intensity map
     img = intensity_map * 256
     img = img.astype("uint8")
+    '''
     cv2.imshow("Intensity Map", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    '''
 
     # Compute height layer of bev-map (ID_S2_EX3) #
 	# using numpy function to create an empty array same as BEV map
@@ -152,8 +154,31 @@ def bev_from_pcl(lidar_pcl, configs):
     # visualize the intensity map (height_map)
     img_height = height_map * 256
     img_height = img_height.astype("uint8")
+    '''
     cv2.imshow("Height_map", img_height)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+    '''
 
-    
+    # TODO remove after implementing all of the above steps
+    #lidar_pcl_copy = []
+    #lidar_pcl_top = []
+    #height_map = []
+    #intensity_map = []
+    density_map = np.zeros((configs.bev_height + 1, configs.bev_width + 1))
+    _, _, counts = np.unique(lidar_pcl_copy[:, 0:2], axis=0, return_index=True, return_counts=True)
+    normalized = np.minimum(1.0, np.log(counts + 1)/ np.log(64))
+    density_map[np.int_(lidar_pcl_top[:, 0]), np.int_(lidar_pcl_top[:, 1])] = normalized
+
+    bev_map = np.zeros((3, configs.bev_height, configs.bev_width))
+    bev_map[2, :, :] = density_map[:configs.bev_height, :configs.bev_width]
+    bev_map[1, :, :] = height_map[:configs.bev_height, :configs.bev_width]
+    bev_map[0, :, :] = intensity_map[:configs.bev_height, :configs.bev_width]
+
+    s1, s2, s3 = bev_map.shape
+    bev_maps = np.zeros((1, s1, s2, s3))
+    bev_maps[0] = bev_map
+
+    bev_maps = torch.from_numpy(bev_maps)
+    input_bev_maps = bev_maps.to(configs.device, non_blocking=True).float()
+    return input_bev_maps
