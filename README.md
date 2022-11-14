@@ -2,132 +2,130 @@
 # SDCND : Sensor Fusion and Tracking
 This is the project for the second course in the  [Udacity Self-Driving Car Engineer Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213) : Sensor Fusion and Tracking. 
 
-In this project, you'll fuse measurements from LiDAR and camera and track vehicles over time. You will be using real-world data from the Waymo Open Dataset, detect objects in 3D point clouds and apply an extended Kalman filter for sensor fusion and tracking.
-
-<img src="img/img_title_1.jpeg"/>
-
-The project consists of two major parts: 
-1. **Object detection**: In this part, a deep-learning approach is used to detect vehicles in LiDAR data based on a birds-eye view perspective of the 3D point-cloud. Also, a series of performance measures is used to evaluate the performance of the detection approach. 
-2. **Object tracking** : In this part, an extended Kalman filter is used to track vehicles over time, based on the lidar detections fused with camera detections. Data association and track management are implemented as well.
-
-The following diagram contains an outline of the data flow and of the individual steps that make up the algorithm. 
-
-<img src="img/img_title_2_new.png"/>
-
-Also, the project code contains various tasks, which are detailed step-by-step in the code. More information on the algorithm and on the tasks can be found in the Udacity classroom. 
-
-## Project File Structure
-
-📦project<br>
- ┣ 📂dataset --> contains the Waymo Open Dataset sequences <br>
- ┃<br>
- ┣ 📂misc<br>
- ┃ ┣ evaluation.py --> plot functions for tracking visualization and RMSE calculation<br>
- ┃ ┣ helpers.py --> misc. helper functions, e.g. for loading / saving binary files<br>
- ┃ ┗ objdet_tools.py --> object detection functions without student tasks<br>
- ┃ ┗ params.py --> parameter file for the tracking part<br>
- ┃ <br>
- ┣ 📂results --> binary files with pre-computed intermediate results<br>
- ┃ <br>
- ┣ 📂student <br>
- ┃ ┣ association.py --> data association logic for assigning measurements to tracks incl. student tasks <br>
- ┃ ┣ filter.py --> extended Kalman filter implementation incl. student tasks <br>
- ┃ ┣ measurements.py --> sensor and measurement classes for camera and lidar incl. student tasks <br>
- ┃ ┣ objdet_detect.py --> model-based object detection incl. student tasks <br>
- ┃ ┣ objdet_eval.py --> performance assessment for object detection incl. student tasks <br>
- ┃ ┣ objdet_pcl.py --> point-cloud functions, e.g. for birds-eye view incl. student tasks <br>
- ┃ ┗ trackmanagement.py --> track and track management classes incl. student tasks  <br>
- ┃ <br>
- ┣ 📂tools --> external tools<br>
- ┃ ┣ 📂objdet_models --> models for object detection<br>
- ┃ ┃ ┃<br>
- ┃ ┃ ┣ 📂darknet<br>
- ┃ ┃ ┃ ┣ 📂config<br>
- ┃ ┃ ┃ ┣ 📂models --> darknet / yolo model class and tools<br>
- ┃ ┃ ┃ ┣ 📂pretrained --> copy pre-trained model file here<br>
- ┃ ┃ ┃ ┃ ┗ complex_yolov4_mse_loss.pth<br>
- ┃ ┃ ┃ ┣ 📂utils --> various helper functions<br>
- ┃ ┃ ┃<br>
- ┃ ┃ ┗ 📂resnet<br>
- ┃ ┃ ┃ ┣ 📂models --> fpn_resnet model class and tools<br>
- ┃ ┃ ┃ ┣ 📂pretrained --> copy pre-trained model file here <br>
- ┃ ┃ ┃ ┃ ┗ fpn_resnet_18_epoch_300.pth <br>
- ┃ ┃ ┃ ┣ 📂utils --> various helper functions<br>
- ┃ ┃ ┃<br>
- ┃ ┗ 📂waymo_reader --> functions for light-weight loading of Waymo sequences<br>
- ┃<br>
- ┣ basic_loop.py<br>
- ┣ loop_over_dataset.py<br>
-
-
-
-## Installation Instructions for Running Locally
-### Cloning the Project
-In order to create a local copy of the project, please click on "Code" and then "Download ZIP". Alternatively, you may of-course use GitHub Desktop or Git Bash for this purpose. 
-
-### Python
-The project has been written using Python 3.7. Please make sure that your local installation is equal or above this version. 
-
-### Package Requirements
-All dependencies required for the project have been listed in the file `requirements.txt`. You may either install them one-by-one using pip or you can use the following command to install them all at once: 
-`pip3 install -r requirements.txt` 
-
-### Waymo Open Dataset Reader
-The Waymo Open Dataset Reader is a very convenient toolbox that allows you to access sequences from the Waymo Open Dataset without the need of installing all of the heavy-weight dependencies that come along with the official toolbox. The installation instructions can be found in `tools/waymo_reader/README.md`. 
-
-### Waymo Open Dataset Files
-This project makes use of three different sequences to illustrate the concepts of object detection and tracking. These are: 
-- Sequence 1 : `training_segment-1005081002024129653_5313_150_5333_150_with_camera_labels.tfrecord`
-- Sequence 2 : `training_segment-10072231702153043603_5725_000_5745_000_with_camera_labels.tfrecord`
-- Sequence 3 : `training_segment-10963653239323173269_1924_000_1944_000_with_camera_labels.tfrecord`
-
-To download these files, you will have to register with Waymo Open Dataset first: [Open Dataset – Waymo](https://waymo.com/open/terms), if you have not already, making sure to note "Udacity" as your institution.
-
-Once you have done so, please [click here](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files) to access the Google Cloud Container that holds all the sequences. Once you have been cleared for access by Waymo (which might take up to 48 hours), you can download the individual sequences. 
-
-The sequences listed above can be found in the folder "training". Please download them and put the `tfrecord`-files into the `dataset` folder of this project.
-
-
-### Pre-Trained Models
-The object detection methods used in this project use pre-trained models which have been provided by the original authors. They can be downloaded [here](https://drive.google.com/file/d/1Pqx7sShlqKSGmvshTYbNDcUEYyZwfn3A/view?usp=sharing) (darknet) and [here](https://drive.google.com/file/d/1RcEfUIF1pzDZco8PJkZ10OL-wLL2usEj/view?usp=sharing) (fpn_resnet). Once downloaded, please copy the model files into the paths `/tools/objdet_models/darknet/pretrained` and `/tools/objdet_models/fpn_resnet/pretrained` respectively.
-
-### Using Pre-Computed Results
-
-In the main file `loop_over_dataset.py`, you can choose which steps of the algorithm should be executed. If you want to call a specific function, you simply need to add the corresponding string literal to one of the following lists: 
-
-- `exec_data` : controls the execution of steps related to sensor data. 
-  - `pcl_from_rangeimage` transforms the Waymo Open Data range image into a 3D point-cloud
-  - `load_image` returns the image of the front camera
-
-- `exec_detection` : controls which steps of model-based 3D object detection are performed
-  - `bev_from_pcl` transforms the point-cloud into a fixed-size birds-eye view perspective
-  - `detect_objects` executes the actual detection and returns a set of objects (only vehicles) 
-  - `validate_object_labels` decides which ground-truth labels should be considered (e.g. based on difficulty or visibility)
-  - `measure_detection_performance` contains methods to evaluate detection performance for a single frame
-
-In case you do not include a specific step into the list, pre-computed binary files will be loaded instead. This enables you to run the algorithm and look at the results even without having implemented anything yet. The pre-computed results for the mid-term project need to be loaded using [this](https://drive.google.com/drive/folders/1-s46dKSrtx8rrNwnObGbly2nO3i4D7r7?usp=sharing) link. Please use the folder `darknet` first. Unzip the file within and put its content into the folder `results`.
-
-- `exec_tracking` : controls the execution of the object tracking algorithm
-
-- `exec_visualization` : controls the visualization of results
-  - `show_range_image` displays two LiDAR range image channels (range and intensity)
-  - `show_labels_in_image` projects ground-truth boxes into the front camera image
-  - `show_objects_and_labels_in_bev` projects detected objects and label boxes into the birds-eye view
-  - `show_objects_in_bev_labels_in_camera` displays a stacked view with labels inside the camera image on top and the birds-eye view with detected objects on the bottom
-  - `show_tracks` displays the tracking results
-  - `show_detection_performance` displays the performance evaluation based on all detected 
-  - `make_tracking_movie` renders an output movie of the object tracking results
-
-Even without solving any of the tasks, the project code can be executed. 
-
-The final project uses pre-computed lidar detections in order for all students to have the same input data. If you use the workspace, the data is prepared there already. Otherwise, [download the pre-computed lidar detections](https://drive.google.com/drive/folders/1IkqFGYTF6Fh_d8J3UjQOSNJ2V42UDZpO?usp=sharing) (~1 GB), unzip them and put them in the folder `results`.
-
-## External Dependencies
-Parts of this project are based on the following repositories: 
-- [Simple Waymo Open Dataset Reader](https://github.com/gdlg/simple-waymo-open-dataset-reader)
-- [Super Fast and Accurate 3D Object Detection based on 3D LiDAR Point Clouds](https://github.com/maudzung/SFA3D)
-- [Complex-YOLO: Real-time 3D Object Detection on Point Clouds](https://github.com/maudzung/Complex-YOLOv4-Pytorch)
-
-
 ## License
 [License](LICENSE.md)
+
+## Project Lineup and Setup
+The project setup can be found in [README.md](https://github.com/udacity/nd013-c2-fusion-starter)
+
+# 3D Object Detection (Mid-Term Project)
+This project is done by using the Waymo Open Dataset's real-world data collected from lidar sensor. Here are the project's requirements that should be done by each section.
+
+- Section 1: Computer Lidar Point-Cloud from Range Image
+  - Convert the range image "range" and "intensity" channel to 8-bit
+  - Able to visualize the result using OpenCV (ID_S1_EX1)
+  - Visualize the point-cloud using open3d module
+  - Identify 10 images of vehicles (ID_S1_EX2)
+
+<br>
+
+- Section 2: Create Birds-Eye View (BEV) from Lidar PCL
+  - Convert coordinates in x,y [m] into x,y [pixel] based on width and height of the bev map (ID_S2_EX1)
+  - Adjust instensity so that the vehicles are clearly visible (ID_S2_EX2)
+  - Compare the to results from just normalizing the height in each BEV map pixel and filling the "height" channel. (ID_S2_EX3)
+
+<br>
+
+- Section 3: Model-based Object Detection in BEV Image
+  - In addition to Complex YOLO, extract the code for output decoding and post-processing from the GitHub repo. (ID_S3_EX1)
+  - Tranform BEV coordinates and convert model output to expected bounding box format. (ID_S3_EX2)
+
+<br>
+
+- Section 4: Performance Evaluation for Object Detection
+  - Compare the ground-truth label and detected objects and count the true positive (ID_S4_EX1)
+  - Compute the false negative and false positive based on IoU and ground-truth labels (ID_S4_EX2)
+  - Compute the precision and recall for all frames (ID_S4_EX3)
+
+All the projects are run in Ubuntu20.04 machine with RTX 3060Ti GPU device. The running code for this project is 
+
+<code> python loop_over_dataset.py </code>
+
+## Section 1: Computer Lidar Point-Cloud from Range Image
+There are some changes in 'loop_over_dataset.py' to run this section
+![Alt text](code_image/section_1_1.png)
+![Alt text](code_image/section_1_2.png)
+
+Also, there are changes in 'objdet_pcl.py'
+![Alt text](code_image/section_1_3.png)
+
+The visualized result by using OpenCV
+![Alt text](result_image/range_image.png)
+
+For the (ID_S1_EX2) task, the code changes in 'loop_over_dataset.py' and 'objdet_pcl.py' are shown as below:
+![Alt text](code_image/section1_4.png)
+![Alt text](code_image/section_1_5.png)
+The frame will change to next by just clicking "Q".
+
+The sample of vehicles from BEV map (one consists of pedestrian):
+
+![Alt text](result_image/pcd_1.png)
+![Alt text](result_image/pcd_2.png)
+![Alt text](result_image/pcd_3.png)
+![Alt text](result_image/pcd_4.png)
+![Alt text](result_image/pcd_5.png)
+![Alt text](result_image/pcd_6.png)
+![Alt text](result_image/pcd_7.png)
+![Alt text](result_image/pcd_8.png)
+![Alt text](result_image/pcd_9.png)
+![Alt text](result_image/pcd_10.png)
+
+Most of the rear bumpers, headover lights, car front lights are included inside the images. From different angle of perspective, some of the parts of vehicles cannot be displayed well due to the intensity of light or the opposite side of the vehicle are being blocked by the body itself. Some of the obstacles in front of the vehicle can still be clearly preojected. Although the reviews are subjected to vehicles, one of the images (pcd_7.png) is showing two people crossing the road. 
+
+## Section 2: Create Birds-Eye View (BEV) from Lidar PCL
+These are the changes in 'loop_over_dataset.py' and 'objdet_pcl.py' to run this section
+![Alt text](code_image/section_2_1.png)
+![Alt text](code_image/section_2_2.png)
+
+The result of BEV map:
+![Alt text](result_image/bev_1.png)
+
+For the task (ID_S2_EX3), the changes are done in 'objdet_pcl.py' as below:
+![Alt text](code_image/section_2_4.png)
+
+The result of just intensity channel without normalizing height:
+![Alt text](result_image/bev_2.png)
+
+The result of normalizing height:
+![Alt text](result_image/bev_3.png)
+
+Both of the focus parts are same.
+
+## Section 3: Model-based Object Detection in BEV Image
+This section is requiring to cloning the Complex-YOLO github repo and understand the configuration from 'parse_test_configs()' in the 'test.py'. Add the configuration to configs file where the model is "fpn_resnet" in 'objdet_detect.py'. 
+
+To run this section, some changes are needed to be made in 'loop_over_dataset.py' and 'objdet_detect.py'.
+![Alt text](code_image/section_3_1.png)
+![Alt text](code_image/section_3_2.png)
+
+The result of object detection on BEV coordinate and metric coordinate on real world image.
+![Alt text](result_image/bounding_box.png)
+
+## Section 4: Performance Evaluation for Object Detection
+In this section, the number of true positive, false positive and false negative are found based on the IoU between detected objects and ground-truth label. The provided data are not retrained, but from the Waymo Dataset. This model is using DarkNet model from Complex-YOLO architecture. After that, the precision-recall curve along 100 frames are plot and the precision and recall are calculated. Another graph is shown where the ground-truth label is taken as objects. 
+
+To run this section, some changes are needed to be made in 'loop_over_dataset.py' and 'objdet_eval.py'.
+![Alt text](code_image/section_5_1.png)
+![Alt text](code_image/section_5_2.png)
+![Alt text](code_image/section_5_3.png)
+![Alt text](code_image/section_5_4.png)
+![Alt text](code_image/section_5_5.png)
+
+After running this section, the precision and recall will be calculated. 
+Precision : 0.95066
+Recall : 0.94444
+
+The graph plot is shown as below:
+![Alt text](result_image/pr_curve.png)
+
+As required, the ground-truth labels are taken as objects to do the same step as above. In the 'loop_over_dataset.py', change the following code,
+
+<code> configs_det.use_labels_as_objects = True </code>
+
+Precision : 1.0
+Recall : 1.0
+
+![Alt text](result_image/pr_curve2.png)
+
+## Conclusion
+This project is helping in understanding the data struture of lidar sensor, converting to 3D point cloud from the data, transforming the 3D point cloud to BEV map, evaluating the performance of Complex-YOLO model by calculating precision and recall, analysing through the plot graph of Precision-Recall curve. This project also helps in understanding the basic of sensor fusion and usage of model before going to the next topic with combining object detection. 
