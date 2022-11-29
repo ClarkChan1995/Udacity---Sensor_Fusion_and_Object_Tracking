@@ -104,6 +104,9 @@ There are some changes in 'measurements.py'. The steps for the code as below:
 The analysis from graph is shown.
 ![Alt text](result_image/step_4_graph.png)
 
+The analysis video is shown here, please open with VLC media player.
+![Alt text](result_image/sensor_fusion_step_4.mkv)
+
 ## Difficulties
 All the project flows are well guided and planned. However, there are some difficulties I have faced when going through this title's project. For example, if using the local computer for running the code, the version of the library is unknown. It needs a lot of time to debug and find the correct version of library in order to run the programs without problems. Besides, a very large pre-computed results are needed to download and placed in the correct path. However, it is too much and difficult to find the path for the designated section to run for the corresponding pkl file. In this project, each sequence pkl file is seperated in different file for easier to allocate, but it makes trouble to read the pkl file as a lot of changes needed to be done in the main loop file to search for the correct path. 
 
